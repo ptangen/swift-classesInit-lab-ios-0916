@@ -19,13 +19,29 @@ import Foundation
 // write your code here
 
 
-
+class Person {
+    var firstName: String
+    var lastName: String
+    var fullName: String {
+        return "\(firstName) \(lastName)"
+    }
+    
+    init(firstName: String, lastName: String){
+        self.firstName = firstName
+        self.lastName = lastName
+    }
+    
+    func greet(person1:Person) -> String {
+        return "Hello, \(person1.firstName)!"
+    }
+}
 
 
 
 
 // Test
 let person = Person(firstName: "Alice", lastName: "Johnson")
+person.lastName
 assert(person.firstName == "Alice", person.firstName)
 assert(person.lastName == "Johnson", person.lastName)
 
@@ -55,14 +71,12 @@ assert(person.fullName == "Alice Johnson", person.fullName)
 
 
 
-
-
-
 // Test
 let friend = Person(firstName: "Phil", lastName: "Davies")
-var greeting = person.greet(friend)
+var greeting = person.greet(person1: friend)
 assert(greeting == "Hello, Phil!", greeting)
-greeting = friend.greet(person)
+greeting = friend.greet(person1: person)
+greeting
 assert(greeting == "Hello, Alice!", greeting)
 
 /*: section4
@@ -84,12 +98,24 @@ extension Double {
 // write your code here
 
 
-
-
-
-
-
-
+class Transaction {
+    var type: String
+    var amount: Double
+    var description: String {
+        var typeDesc: String
+        if type == "in" {
+            typeDesc = "credit"
+        } else {
+            typeDesc = "debit"
+        }
+        return "Transaction: \(typeDesc) in the amount of $\(amount.toMoney)"
+    }
+    
+    init(type: String, amount: Double){
+        self.type = type
+        self.amount = amount
+    }
+}
 
 
 // Test
@@ -108,15 +134,7 @@ assert(transaction2.amount == 1.2, "\(transaction2.amount)")
  
  Note that formatting `Double`s so they have two decimal places (like money) can be a bit difficult, so a method has been added to the `Double` class for you to help you with that. Assuming `amount` is a double, you can call `double.toMoney` to get a string that formats the `Double` to two decimal places.
  */
-
-
-
-
-
-
-
-
-
+transaction1.description
 
 // Test
 assert(transaction1.description == "Transaction: credit in the amount of $10.00", transaction1.description)
@@ -134,12 +152,35 @@ assert(transaction2.description == "Transaction: debit in the amount of $1.20", 
  */
 // write your code here
 
-
-
-
-
-
-
+class BankAccount {
+    var owner: Person
+    var transactions: [Transaction]
+    
+    init(owner:Person){
+        self.owner = owner
+        self.transactions = []
+    }
+    
+    func deposit(amount:Double){
+        transactions.append(Transaction(type: "in", amount: amount))
+    }
+    
+    func withdraw(amount:Double){
+        transactions.append(Transaction(type: "out", amount: amount))
+    }
+    
+    var balance: Double {
+        var result = 0.0
+        for transaction in transactions{
+            if transaction.type == "in" {
+                result += transaction.amount
+            } else {
+                result -= transaction.amount
+            }
+        }
+        return result
+    }
+}
 
 
 
@@ -147,6 +188,7 @@ assert(transaction2.description == "Transaction: debit in the amount of $1.20", 
 let personBankAccount = BankAccount(owner: person)
 assert(personBankAccount.owner.fullName == "Alice Johnson", personBankAccount.owner.fullName)
 assert(personBankAccount.transactions.isEmpty)
+personBankAccount.owner.firstName
 
 /*: section7
  
@@ -158,17 +200,10 @@ assert(personBankAccount.transactions.isEmpty)
 
 
 
-
-
-
-
-
-
-
 // Test
-personBankAccount.deposit(100.0)
+personBankAccount.deposit(amount:100.0)
 assert(personBankAccount.transactions.count == 1, "\(personBankAccount.transactions.count)")
-personBankAccount.deposit(10.0)
+personBankAccount.deposit(amount:10.0)
 assert(personBankAccount.transactions.count == 2, "\(personBankAccount.transactions.count)")
 
 /*: section8
@@ -182,15 +217,10 @@ assert(personBankAccount.transactions.count == 2, "\(personBankAccount.transacti
 
 
 
-
-
-
-
-
 // Test
-personBankAccount.withdraw(25.0)
+personBankAccount.withdraw(amount:25.0)
 assert(personBankAccount.transactions.count == 3, "\(personBankAccount.transactions.count)")
-personBankAccount.withdraw(10.5)
+personBankAccount.withdraw(amount:10.5)
 assert(personBankAccount.transactions.count == 4, "\(personBankAccount.transactions.count)")
 
 /*: section9
@@ -202,13 +232,7 @@ assert(personBankAccount.transactions.count == 4, "\(personBankAccount.transacti
  Remember that "in" transactions count as money coming in, and "out" transactions count as money going out.
  */
 
-
-
-
-
-
-
-
+personBankAccount.balance
 
 // Test
 assert(personBankAccount.balance == 74.5, personBankAccount.balance.toMoney)
